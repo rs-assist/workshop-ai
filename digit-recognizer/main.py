@@ -9,7 +9,6 @@ Usage:
     python main.py batch <folder_path>           # Batch prediction
     python main.py realtime                      # Real-time webcam recognition
     python main.py train                         # Train new models
-    python main.py test                          # Run test suite
 
 Features:
     ✅ Ensemble prediction with multiple models
@@ -82,16 +81,12 @@ Examples:
         elif args.command == 'train':
             from training.train_ultimate import train_ultimate_models
             train_ultimate_models()
-            
-        elif args.command == 'test':
-            from tests.run_tests import run_all_tests
-            run_all_tests()
-            
+
     except ImportError as e:
-        print(f"❌ Error importing module: {e}")
+        print(f"ERROR: Error importing module: {e}")
         print("Make sure all dependencies are installed: pip install -r requirements.txt")
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"ERROR: {e}")
 
 if __name__ == "__main__":
     main()

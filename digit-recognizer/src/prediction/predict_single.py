@@ -3,12 +3,22 @@
 Single image prediction module
 """
 
+import os
+import sys
+import warnings
+
+# Suppress TensorFlow warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress INFO and WARNING logs
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable oneDNN optimizations to avoid warnings
+warnings.filterwarnings('ignore', category=UserWarning, module='absl')
+
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import cv2
-import os
-import sys
+
+# Additional TensorFlow warnings suppression
+tf.get_logger().setLevel('ERROR')
 
 def load_all_models():
     """Load all available trained models"""
@@ -25,12 +35,14 @@ def load_all_models():
     for model_path, name in model_files:
         if os.path.exists(model_path):
             try:
-                model = keras.models.load_model(model_path)
+                model = keras.models.load_model(model_path, compile=False)
+                # Compile the model to avoid warnings
+                model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
                 models.append(model)
                 model_names.append(name)
-                print(f"✅ Loaded {name}")
+                print(f"Loaded {name}")
             except Exception as e:
-                print(f"⚠️ Could not load {name}: {e}")
+                print(f"Could not load {name}: {e}")
     
     return models, model_names
 
@@ -59,13 +71,13 @@ def preprocess_image_simple(image_path):
 
 def predict_digit(models, model_names, image_path):
     """Predict digit using ensemble of models"""
-    print(f"\n🔍 Analyzing: {image_path}")
+    print(f"\nAnalyzing: {image_path}")
     print("-" * 40)
     
     # Preprocess image
     processed_image = preprocess_image_simple(image_path)
     if processed_image is None:
-        print("❌ Could not process image")
+        print("ERROR: Could not process image")
         return None
     
     # Predict with all models
@@ -75,7 +87,7 @@ def predict_digit(models, model_names, image_path):
         predicted_digit = np.argmax(pred[0])
         confidence = pred[0][predicted_digit]
         predictions.append(pred[0])
-        print(f"{name:20} → {predicted_digit} ({confidence:.1%})")
+        print(f"{name:20} -> {predicted_digit} ({confidence:.1%})")
     
     # Ensemble prediction
     if len(predictions) > 1:
@@ -84,7 +96,7 @@ def predict_digit(models, model_names, image_path):
         ensemble_conf = ensemble_avg[ensemble_pred]
         
         print("-" * 40)
-        print(f"🏆 ENSEMBLE RESULT → {ensemble_pred} ({ensemble_conf:.1%})")
+        print(f"ENSEMBLE RESULT -> {ensemble_pred} ({ensemble_conf:.1%})")
         
         return ensemble_pred, ensemble_conf
     else:
@@ -93,7 +105,7 @@ def predict_digit(models, model_names, image_path):
 def predict_single_image(image_path):
     """Main function to predict a single image"""
     if not os.path.exists(image_path):
-        print(f"❌ File not found: {image_path}")
+        print(f"ERROR: File not found: {image_path}")
         return
     
     print("🚀 DIGIT RECOGNITION SYSTEM")
@@ -102,27 +114,27 @@ def predict_single_image(image_path):
     # Load models
     models, model_names = load_all_models()
     if not models:
-        print("❌ No models found!")
+        print("ERROR: No models found!")
         return
     
-    print(f"📊 Loaded {len(models)} models")
+    print(f"Loaded {len(models)} models")
     
     # Make prediction
     result = predict_digit(models, model_names, image_path)
     if result:
         pred, conf = result
-        print(f"\n🎯 FINAL PREDICTION: {pred}")
-        print(f"🎯 CONFIDENCE: {conf:.1%}")
+        print(f"\nFINAL PREDICTION: {pred}")
+        print(f"CONFIDENCE: {conf:.1%}")
         
         # Confidence assessment
         if conf >= 0.95:
-            print("📊 Confidence Level: 🟢 VERY HIGH")
+            print("Confidence Level: VERY HIGH")
         elif conf >= 0.80:
-            print("📊 Confidence Level: 🟡 HIGH")
+            print("Confidence Level: HIGH")
         elif conf >= 0.65:
-            print("📊 Confidence Level: 🟠 MEDIUM")
+            print("Confidence Level: MEDIUM")
         else:
-            print("📊 Confidence Level: 🔴 LOW")
+            print("Confidence Level: LOW")
             
         return pred, conf
     

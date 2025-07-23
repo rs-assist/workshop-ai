@@ -10,7 +10,7 @@ from .predict_single import load_all_models, predict_digit
 def predict_batch_images(folder_path):
     """Predict all images in a folder"""
     if not os.path.exists(folder_path):
-        print(f"❌ Folder not found: {folder_path}")
+        print(f"ERROR: Folder not found: {folder_path}")
         return
     
     # Find all image files
@@ -22,20 +22,20 @@ def predict_batch_images(folder_path):
         image_files.extend(glob.glob(os.path.join(folder_path, ext.upper())))
     
     if not image_files:
-        print(f"❌ No image files found in {folder_path}")
+        print(f"No image files found in {folder_path}")
         return
     
-    print("🚀 BATCH DIGIT RECOGNITION")
+    print("BATCH DIGIT RECOGNITION")
     print("=" * 50)
-    print(f"📁 Processing {len(image_files)} images from {folder_path}")
+    print(f"Processing {len(image_files)} images from {folder_path}")
     
     # Load models once
     models, model_names = load_all_models()
     if not models:
-        print("❌ No models found!")
+        print("No models found!")
         return
     
-    print(f"📊 Using {len(models)} models for ensemble prediction")
+    print(f"Using {len(models)} models for ensemble prediction")
     print("=" * 50)
     
     # Process all images
@@ -59,21 +59,21 @@ def predict_batch_images(folder_path):
     
     # Summary
     print("\n" + "=" * 50)
-    print("📊 BATCH PROCESSING SUMMARY")
+    print("BATCH PROCESSING SUMMARY")
     print("=" * 50)
     
     if results:
         total_images = len(results)
         avg_confidence = sum(r['confidence'] for r in results) / total_images
         
-        print(f"📝 Total Images Processed: {total_images}")
-        print(f"📈 Average Confidence: {avg_confidence:.1%}")
-        print(f"🎯 High Confidence (≥75%): {high_confidence_count}/{total_images} ({high_confidence_count/total_images*100:.1f}%)")
+        print(f"Total Images Processed: {total_images}")
+        print(f"Average Confidence: {avg_confidence:.1%}")
+        print(f"High Confidence (>=75%): {high_confidence_count}/{total_images} ({high_confidence_count/total_images*100:.1f}%)")
         
-        print("\n🏆 DETAILED RESULTS:")
+        print("\nDETAILED RESULTS:")
         for result in results:
-            conf_emoji = "🟢" if result['confidence'] >= 0.75 else "🟡" if result['confidence'] >= 0.60 else "🔴"
-            print(f"   {conf_emoji} {result['file']:20} → {result['prediction']} ({result['confidence']:.1%})")
+            conf_level = "HIGH" if result['confidence'] >= 0.75 else "MED" if result['confidence'] >= 0.60 else "LOW"
+            print(f"   [{conf_level}] {result['file']:20} -> {result['prediction']} ({result['confidence']:.1%})")
         
         # Save results to file
         output_file = os.path.join("outputs", "batch_results.txt")
@@ -89,8 +89,8 @@ def predict_batch_images(folder_path):
             f.write("-" * 40 + "\n")
             
             for result in results:
-                f.write(f"{result['file']:20} → {result['prediction']} ({result['confidence']:.1%})\n")
+                f.write(f"{result['file']:20} -> {result['prediction']} ({result['confidence']:.1%})\n")
         
-        print(f"\n💾 Results saved to: {output_file}")
+        print(f"\nResults saved to: {output_file}")
     
     return results
