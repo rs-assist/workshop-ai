@@ -20,8 +20,11 @@ def load_all_models():
         ('models/ultimate_standalone_ensemble_1.keras', 'Ensemble 1'),
         ('models/ultimate_standalone_ensemble_2.keras', 'Ensemble 2'),
         ('models/ultimate_standalone_ensemble_3.keras', 'Ensemble 3'),
-        ('models/improved_digit_recognition_model.h5', 'Improved'),
-        ('models/digit_recognition_model.h5', 'Original')
+        ('models/ultimate_final_model.h5', 'Ultimate Final'),
+        ('models/ultimate_final_ensemble_1.h5', 'Final Ensemble 1'),
+        ('models/ultimate_final_ensemble_2.h5', 'Final Ensemble 2'),
+        ('models/ultimate_final_ensemble_3.h5', 'Final Ensemble 3'),
+        ('models/improved_digit_recognition_model.h5', 'Improved')
     ]
     
     for model_path, name in model_files:
