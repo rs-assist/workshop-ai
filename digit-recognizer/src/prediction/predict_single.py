@@ -20,7 +20,6 @@ def load_all_models():
         ('models/ultimate_final_ensemble_1.h5', 'Final Ensemble 1'),
         ('models/ultimate_final_ensemble_2.h5', 'Final Ensemble 2'),
         ('models/ultimate_final_ensemble_3.h5', 'Final Ensemble 3'),
-        ('models/improved_digit_recognition_model.h5', 'Improved')
     ]
     
     for model_path, name in model_files:
