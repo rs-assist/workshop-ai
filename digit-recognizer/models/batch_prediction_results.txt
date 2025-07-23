@@ -1,0 +1,39 @@
+Batch Digit Recognition Results
+==================================================
+
+File: test1.png
+Prediction: 2
+Confidence: 0.9822 (98.22%)
+------------------------------
+File: test2.png
+Prediction: 6
+Confidence: 0.9373 (93.73%)
+------------------------------
+File: test3.png
+Prediction: 6
+Confidence: 0.4133 (41.33%)
+------------------------------
+File: test4.png
+Prediction: 2
+Confidence: 0.6193 (61.93%)
+------------------------------
+File: test5.png
+Prediction: 6
+Confidence: 0.7741 (77.41%)
+------------------------------
+File: test6.png
+Prediction: 0
+Confidence: 0.9253 (92.53%)
+------------------------------
+File: test7.png
+Prediction: 0
+Confidence: 0.5044 (50.44%)
+------------------------------
+File: test8.png
+Prediction: 2
+Confidence: 0.4126 (41.26%)
+------------------------------
+File: test9.png
+Prediction: 0
+Confidence: 0.9735 (97.35%)
+------------------------------

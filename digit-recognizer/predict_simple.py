@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""
+Simple but powerful prediction system for handwritten digits
+"""
+
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+import cv2
+import os
+import sys
+
+def load_all_models():
+    """Load all available models"""
+    models = []
+    model_names = []
+    
+    model_files = [
+        ('models/ultimate_standalone_model.keras', 'Ultimate Standalone'),
+        ('models/ultimate_standalone_ensemble_1.keras', 'Ensemble 1'),
+        ('models/ultimate_standalone_ensemble_2.keras', 'Ensemble 2'),
+        ('models/ultimate_standalone_ensemble_3.keras', 'Ensemble 3'),
+        ('models/improved_digit_recognition_model.h5', 'Improved'),
+        ('models/digit_recognition_model.h5', 'Original')
+    ]
+    
+    for model_path, name in model_files:
+        if os.path.exists(model_path):
+            try:
+                model = keras.models.load_model(model_path)
+                models.append(model)
+                model_names.append(name)
+                print(f"✅ Loaded {name}")
+            except Exception as e:
+                print(f"⚠️ Could not load {name}: {e}")
+    
+    return models, model_names
+
+def preprocess_image_simple(image_path):
+    """Simple but effective image preprocessing"""
+    try:
+        # Read image
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            return None
+        
+        # Resize to 28x28
+        image = cv2.resize(image, (28, 28))
+        
+        # Invert if needed (make digits white on black background)
+        if np.mean(image) > 127:
+            image = 255 - image
+        
+        # Normalize
+        image = image.astype('float32') / 255.0
+        
+        return image
+    except Exception as e:
+        print(f"Error preprocessing image: {e}")
+        return None
+
+def predict_digit(models, model_names, image_path):
+    """Predict digit using ensemble of models"""
+    print(f"\n🔍 Analyzing: {image_path}")
+    print("-" * 40)
+    
+    # Preprocess image
+    processed_image = preprocess_image_simple(image_path)
+    if processed_image is None:
+        print("❌ Could not process image")
+        return None
+    
+    # Predict with all models
+    predictions = []
+    for model, name in zip(models, model_names):
+        pred = model.predict(processed_image.reshape(1, 28, 28, 1), verbose=0)
+        predicted_digit = np.argmax(pred[0])
+        confidence = pred[0][predicted_digit]
+        predictions.append(pred[0])
+        print(f"{name:20} → {predicted_digit} ({confidence:.1%})")
+    
+    # Ensemble prediction
+    if len(predictions) > 1:
+        ensemble_avg = np.mean(predictions, axis=0)
+        ensemble_pred = np.argmax(ensemble_avg)
+        ensemble_conf = ensemble_avg[ensemble_pred]
+        
+        print("-" * 40)
+        print(f"🏆 ENSEMBLE RESULT → {ensemble_pred} ({ensemble_conf:.1%})")
+        
+        return ensemble_pred, ensemble_conf
+    else:
+        return predicted_digit, confidence
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python predict_simple.py <image_path>")
+        return
+    
+    image_path = sys.argv[1]
+    if not os.path.exists(image_path):
+        print(f"❌ File not found: {image_path}")
+        return
+    
+    print("🚀 SIMPLE PREDICTION SYSTEM")
+    print("=" * 40)
+    
+    # Load models
+    models, model_names = load_all_models()
+    if not models:
+        print("❌ No models found!")
+        return
+    
+    print(f"📊 Loaded {len(models)} models")
+    
+    # Make prediction
+    result = predict_digit(models, model_names, image_path)
+    if result:
+        pred, conf = result
+        print(f"\n🎯 FINAL PREDICTION: {pred}")
+        print(f"🎯 CONFIDENCE: {conf:.1%}")
+
+if __name__ == "__main__":
+    main()
