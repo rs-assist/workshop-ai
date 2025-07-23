@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple but powerful prediction system for handwritten digits
+Single image prediction module
 """
 
 import numpy as np
@@ -11,15 +11,11 @@ import os
 import sys
 
 def load_all_models():
-    """Load all available models"""
+    """Load all available trained models"""
     models = []
     model_names = []
     
     model_files = [
-        ('models/ultimate_standalone_model.keras', 'Ultimate Standalone'),
-        ('models/ultimate_standalone_ensemble_1.keras', 'Ensemble 1'),
-        ('models/ultimate_standalone_ensemble_2.keras', 'Ensemble 2'),
-        ('models/ultimate_standalone_ensemble_3.keras', 'Ensemble 3'),
         ('models/ultimate_final_model.h5', 'Ultimate Final'),
         ('models/ultimate_final_ensemble_1.h5', 'Final Ensemble 1'),
         ('models/ultimate_final_ensemble_2.h5', 'Final Ensemble 2'),
@@ -95,17 +91,13 @@ def predict_digit(models, model_names, image_path):
     else:
         return predicted_digit, confidence
 
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: python predict_simple.py <image_path>")
-        return
-    
-    image_path = sys.argv[1]
+def predict_single_image(image_path):
+    """Main function to predict a single image"""
     if not os.path.exists(image_path):
         print(f"❌ File not found: {image_path}")
         return
     
-    print("🚀 SIMPLE PREDICTION SYSTEM")
+    print("🚀 DIGIT RECOGNITION SYSTEM")
     print("=" * 40)
     
     # Load models
@@ -122,6 +114,17 @@ def main():
         pred, conf = result
         print(f"\n🎯 FINAL PREDICTION: {pred}")
         print(f"🎯 CONFIDENCE: {conf:.1%}")
-
-if __name__ == "__main__":
-    main()
+        
+        # Confidence assessment
+        if conf >= 0.95:
+            print("📊 Confidence Level: 🟢 VERY HIGH")
+        elif conf >= 0.80:
+            print("📊 Confidence Level: 🟡 HIGH")
+        elif conf >= 0.65:
+            print("📊 Confidence Level: 🟠 MEDIUM")
+        else:
+            print("📊 Confidence Level: 🔴 LOW")
+            
+        return pred, conf
+    
+    return None
