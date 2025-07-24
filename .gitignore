@@ -1,0 +1,10 @@
+__pycache__
+
+flappy-bird-bot/.venv/
+
+flappy-bird-bot/.vscode/
+
+flappy-bird-bot/Include/
+flappy-bird-bot/Lib/
+flappy-bird-bot/Scripts/
+flappy-bird-bot/share/
